@@ -147,6 +147,9 @@ class ViewController: UIViewController {
                         jump = false
                         top = false
                         gravity = 0
+                        UIView.animateWithDuration(0.5, animations: {
+                            self.runner.transform = CGAffineTransformMakeRotation(-2)
+                        })
                     }
                         
                 }else{
@@ -164,6 +167,9 @@ class ViewController: UIViewController {
                             //还是跳不过
                             gaming = false
                             RestartBtn.alpha = 1
+                            UIView.animateWithDuration(0.5, animations: {
+                                self.runner.transform = CGAffineTransformMakeRotation(-2)
+                            })
                         
                         }
                         
