@@ -9,6 +9,10 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
 
     var runner:UIImageView!
     
@@ -59,23 +63,33 @@ class ViewController: UIViewController {
     }
     
     var gaming = false
+    var gameOvering = false
+    
+    var touching = false
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         if gaming{
+            touching = true
             runner.stopAnimating()
             jump = true
         }else{
-            runner.image = UIImage(named: "runner_4")
-            runner.startAnimating()
+            if !gameOvering{
+                runner.image = UIImage(named: "runner_4")
+                runner.startAnimating()
             
-            gaming = true
-            var width = CGFloat(arc4random()%400+300)
-            var height = CGFloat(arc4random()%50+102)
-            ground.append(UIImageView(frame: CGRectMake(ground[0].bounds.width+160, verHeight-height, width, height)))
-            ground[1].backgroundColor = UIColor.grayColor()
-            view.addSubview(ground[1])
+                gaming = true
+                var width = CGFloat(arc4random()%400+300)
+                var height = CGFloat(arc4random()%50+102)
+                ground.append(UIImageView(frame: CGRectMake(ground[0].bounds.width+160, verHeight-height, width, height)))
+                ground[1].backgroundColor = UIColor.grayColor()
+                view.addSubview(ground[1])
+            }
+            
         }
         
+    }
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        touching = false
     }
     
     var jump = false
@@ -84,6 +98,7 @@ class ViewController: UIViewController {
     var score = 0
     var showScore = 0
     
+    var jumpHeight:CGFloat = 1.0
     
     func timer(sender:NSTimer){
         
@@ -122,6 +137,7 @@ class ViewController: UIViewController {
                     })
                     gaming = false
                     RestartBtn.alpha = 1
+                    gameOvering = true
                     
                 }
 
@@ -150,6 +166,7 @@ class ViewController: UIViewController {
                         UIView.animateWithDuration(0.5, animations: {
                             self.runner.transform = CGAffineTransformMakeRotation(-2)
                         })
+                        gameOvering = true
                     }
                         
                 }else{
@@ -170,6 +187,7 @@ class ViewController: UIViewController {
                             UIView.animateWithDuration(0.5, animations: {
                                 self.runner.transform = CGAffineTransformMakeRotation(-2)
                             })
+                            gameOvering = true
                         
                         }
                         
@@ -183,11 +201,18 @@ class ViewController: UIViewController {
                 
             }else{
                 //正在往上跳
-                runner.center.y -= 4 - gravity
+                if touching{
+                    jumpHeight += 0.2
+                }
+                runner.center.y -= jumpHeight - gravity
                 gravity+=0.1
-                if gravity >= 4{
+                if jumpHeight >= 5.0{
+                    touching = false
+                }
+                if gravity >= jumpHeight{
                     gravity = 0
                     top = true
+                    jumpHeight = 1.0
                 }
             }
         }
@@ -204,6 +229,7 @@ class ViewController: UIViewController {
         score = 0
         showScore = 0
         scoreBoard.text = "\(showScore)"
+        gameOvering = false
         
         for i in ground{
             i.alpha = 0
